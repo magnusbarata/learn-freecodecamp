@@ -1,0 +1,31 @@
+{
+  "name": "fcc-apis-uservices",
+  "version": "0.1.0",
+  "description": "freeCodeCamp APIs and Microservices Projects",
+  "author": "magnusbarata",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "cors": "^2.8.5",
+    "mongodb": "^3.5.5",
+    "mongoose": "^5.9.9",
+    "body-parser": "^1.19.0",
+    "shortid": "^2.2.15",
+    "multer": "^1.4.2"
+  },
+  "engines": {
+    "node": "12.x"
+  },
+  "repository": {
+    "url": ""
+  },
+  "license": "MIT",
+  "keywords": [
+    "freeCodeCamp",
+    "API",
+    "microservices"
+  ]
+}

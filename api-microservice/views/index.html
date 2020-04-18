@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>APIs and Microservices Projects</title>
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <script src="/script.js" defer></script>
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>Timestamp</h2>
+      <form>
+        <label for="dateString">Insert date string (current date will be used if leaved empty)</label>
+        <input id="dateString" type="text" name="dateString" placeholder="UNIX or UTC date string"><br>
+        <button type="button" id="getTimestamp">GET timestamp</button>
+        <p id="showTimestamp"></p>
+      </form>
+    </div>
+
+    <div class="container">
+      <h2>Who Am I</h2>
+      <form>
+        <button type="button" id="getWhoami">GET my info</button>
+        <p id="showWhoami"></p>
+      </form>
+    </div>
+
+    <div class="container">
+      <h2>URL Shortener</h2>
+      <form action="api/shorturl/new" method="POST">
+        <label for="url_input">URL to be shortened</label>
+        <input id="url_input" type="text" name="url" placeholder="https://www.veryverylongurl.com/shorten/your/url" required>
+        <input type="submit" value="POST URL">
+      </form>
+    </div>
+
+    <div class="container">
+      <h2>User Exercise Logger</h2>
+      <form action="/api/exercise/new-user" method="post">
+        <h3>Create a New User</h3>
+        <!--p><code>POST /api/exercise/new-user</code></p-->
+        <input id="uname" type="text" name="username" placeholder="{username}" required>
+        <input type="submit" value="Submit">
+      </form>
+      <form action="/api/exercise/add" method="post">
+        <h3>Add exercises</h3>
+        <!--p><code>POST /api/exercise/add</code></p-->
+        <input id="uid" type="text" name="userId" placeholder="{userId}" required>
+        <input id="desc" type="text" name="description" placeholder="{description}" required>
+        <input id="dur" type="text" name="duration" placeholder="{duration} (mins.)" required>
+        <input id="date" type="text" name="date" placeholder="[date] (yyyy-mm-dd)"><br>
+        <input type="submit" value="Submit">
+      </form>
+        <p><strong>GET users's exercise log: </strong><code>https://fcc-apis-uservices.glitch.me/api/exercise/log?{userId}[&amp;from][&amp;to][&amp;limit]</code></p>
+        <p><strong>{ }</strong> = required, <strong>[ ]</strong> = optional</p>
+        <p><strong>from, to</strong> = dates (yyyy-mm-dd); <strong>limit</strong> = number</p>
+    </div>
+
+    <div class="container">
+      <h2>File Metadata</h2>
+      <form enctype="multipart/form-data" method="POST" action="/api/fileanalyse">
+        <input id="inputfield" type="file" name="upfile">
+        <input id="button" type="submit" value="Upload">
+      </form>
+    </div>
+    <footer>magnusbarata &copy; 2020 | Powered with <a href="https://glitch.com">Glitch</a>!</footer>
+  </body>
+</html>
