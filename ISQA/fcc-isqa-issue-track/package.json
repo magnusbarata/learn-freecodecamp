@@ -1,0 +1,34 @@
+{
+  "name": "fcc-isqa-issue-track",
+  "version": "0.1.0",
+  "description": "An FCC ISQA Challenge: Issue Tracker",
+  "author": "magnusbarata",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "cors": "^2.8.5",
+    "body-parser": "^1.19.0",
+    "chai": "^4.2.0",
+    "mongodb": "^3.5.5",
+    "chai-http": "^4.3.0",
+    "mocha": "^7.1.1",
+    "zombie": "^6.1.4",
+    "helmet": "^3.21.3"
+  },
+  "engines": {
+    "node": "^14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://hyperdev.com/#!/project/welcome-project"
+  },
+  "keywords": [
+    "node",
+    "hyperdev",
+    "express"
+  ],
+  "license": "MIT"
+}
