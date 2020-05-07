@@ -44,7 +44,7 @@ __See my [Data Visualization certification](https://www.freecodecamp.org/certifi
 
 __Technologies Learned:__ Data visualization using [D3](https://d3js.org/), in addition to JSON APIs and Ajax.
 
-__Check out the demo ~[application]()~!__
+__Check out the demo [application](https://cdpn.io/magnusbarata/debug/GRpxZxW/jVkpobLqgjyA)!__
 
 ## [APIs and Microservices](https://github.com/magnusbarata/learn-freecodecamp/tree/master/api-microservice)
 __See my [APIs and Microservices certification](https://www.freecodecamp.org/certification/magnusbarata/apis-and-microservices).__
@@ -65,6 +65,7 @@ __Technologies Learned:__
 3. User authentication: [Passport](http://www.passportjs.org/) and [Socket.IO](https://socket.io/)
 
 __Check out the demos!__
+
 0. [GitHub user chat room](https://fcc-infosec-qa-node-express3.glitch.me/)
 1. [Metric-Imperial Converter](https://fcc-isqa-met-imp-conv.glitch.me/)
 2. [Issue Tracker](https://fcc-isqa-issue-track.glitch.me/)
