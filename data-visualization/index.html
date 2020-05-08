@@ -5,6 +5,7 @@
     <title></title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.15.1/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
     <script src="charts.js"></script>
   </head>
   <body>
@@ -12,9 +13,8 @@
     <main>
       <h1>Data Visualizations using D3</h1>
       <div class="visArea">
-        <div id="title"></div>
+        <div id="title">Select graph to show</div>
         <div id="description"></div>
-        <svg></svg>
       </div>
       <button id="viewBarChart" onclick="viewBarChart()">
         Bar Chart

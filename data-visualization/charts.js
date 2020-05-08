@@ -6,6 +6,7 @@ const viewBarChart = function() {
   visArea.select('#tooltip').remove();
   visArea.select('svg').remove();
 
+  let svg = visArea.append('svg').attr('width', w).attr('height', h);
   const xhr = new XMLHttpRequest();
   xhr.open('GET', 'https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/GDP-data.json', true);
   xhr.send();
@@ -25,7 +26,6 @@ const viewBarChart = function() {
                          .attr('class','barTip').style('opacity', 0);
 
     // Add bars
-    let svg = visArea.append('svg').attr('width', w).attr('height', h);
     svg.selectAll('rect').data(dataset).enter().append('rect')
        .attr('data-date', d => d[0])
        .attr('data-gdp', d => d[1])
@@ -67,6 +67,7 @@ const viewScatterplot = function() {
   visArea.select('#tooltip').remove();
   visArea.select('svg').remove();
 
+  let svg = visArea.append('svg').attr('width', w).attr('height', h);
   d3.json('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/cyclist-data.json')
     .then(function (data) {
       // Preparation
@@ -85,7 +86,6 @@ const viewScatterplot = function() {
                            .attr('class','scatterTip').style('opacity', 0);
 
       // Add dots
-      let svg = visArea.append('svg').attr('width', w).attr('height', h);
       svg.selectAll('circle').data(data).enter().append('circle')
          .attr('class', 'dot')
          .attr('data-xvalue', d => new Date(d.Year.toString()))
@@ -123,7 +123,7 @@ const viewScatterplot = function() {
 
       legendLabel.append('text').attr('x', w - 210).attr('y', 10)
                  .attr('dy', '.35em').style('text-anchor', 'start')
-                 .text(d => d ? 'Doping allegations' : 'No allegations');
+                 .text(d => d ? 'No allegations' : 'Doping allegations');
 
       // Legend border
       legend.each(function() {
@@ -155,6 +155,7 @@ const viewHeatMap = function() {
   visArea.select('#tooltip').remove();
   visArea.select('svg').remove();
 
+  let svg = visArea.append('svg').attr('width', w).attr('height', h);
   d3.json('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/global-temperature.json')
     .then(function (data) {
       let desc = visArea.select('#description')
@@ -167,17 +168,15 @@ const viewHeatMap = function() {
                        .domain(data.monthlyVariance.map(d => new Date(d.year.toString())));
       const yScale = d3.scaleBand().range([0, h-pad.vert]).padding(0)
                        .domain(data.monthlyVariance.map(d => new Date(0).setMonth(d.month-1)));
-      const colors = ['#5e4fa2', '#3288bd', '#66c2a5', '#abdda4', '#e6f598', '#ffffbf', '#fee08b', '#fdae61', '#f46d43', '#d53e4f', '#9e0142'];
       const minTemp = d3.min(data.monthlyVariance, d => d.variance);
       const maxTemp = d3.max(data.monthlyVariance, d => d.variance);
-      const cScale = d3.scaleQuantize().range(colors.slice(1,-1)).domain([minTemp, maxTemp]);
+      const cScale = d3.scaleSequential([minTemp, maxTemp], d3.interpolateTurbo);
 
       // Add tooltip
       let tooltip = visArea.append('div').attr('id', 'tooltip')
                            .attr('class','heatmapTip').style('opacity', 0);
 
       // Add cells
-      let svg = visArea.append('svg').attr('width', w).attr('height', h);
       svg.selectAll('rect').data(data.monthlyVariance).enter().append('rect')
          .attr('data-month', d => d.month-1)
          .attr('data-year', d => d.year)
@@ -202,13 +201,13 @@ const viewHeatMap = function() {
 
       // Add legend
       let legend = svg.append('g').attr('id', 'legend');
-      let legendLabel = legend.selectAll('#legend').data(cScale.ticks().slice(0,-1))
+      let legendLabel = legend.selectAll('#legend').data(cScale.ticks())
                               .enter().append('g')
-                              .attr('transform', (d, i) => `translate(${w/2+80},${h-pad.vert+20})`)
+                              .attr('transform', (d, i) => `translate(${w/2+60},${h-pad.vert+20})`)
 
       legendLabel.append('rect').attr('x', (d, i) => 30*i).attr('y', 0)
                  .attr('width', 30).attr('height',30)
-                 .style('fill', (d,i) => colors[i]);
+                 .style('fill', d => cScale(d));
 
       legendLabel.append('text').attr('x', (d, i) => 30*i).attr('y', 40)
                  .attr('dy', '.3em').style('font-size', '12')
@@ -230,4 +229,78 @@ const viewHeatMap = function() {
          .attr('x', -h/2).attr('y', 15).text('Month');
       svg.append('text').attr('x', w/2-10).attr('y', h-pad.vert+35).text('Year');
     });
+}
+
+const viewChoroplethMap = function() {
+  const sources = ['https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/counties.json',
+                   'https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/for_user_education.json'];
+  const w = 975, h = 610;
+  let visArea = d3.select('.visArea');
+  let title = visArea.select('#title').text('US Educational Attainment');
+  let desc = visArea.select('#description').text('Percentage of adults aged 25 and older with bachelor\'s degree or higher (2010-2014)');
+
+  visArea.select('#tooltip').remove();
+  let tooltip = visArea.append('div').attr('id', 'tooltip')
+                       .attr('class','choroplethTip').style('opacity', 0);
+
+  visArea.select('svg').remove();
+  let svg = visArea.append('svg').attr('width', w).attr('height', h);
+  Promise.all(sources.map(url => d3.json(url))).then(function(datas) {
+    const us = datas[0], edu = datas[1];
+    const path = d3.geoPath();
+    const minEdu = d3.min(edu, d => d.bachelorsOrHigher);
+    const maxEdu = d3.max(edu, d => d.bachelorsOrHigher);
+    const cScale = d3.scaleSequential([minEdu, maxEdu], d3.interpolateRdYlGn);
+    const eduMap = edu.reduce((obj, data) => {
+      obj[data.fips] = data;
+      return obj;
+    }, {});
+
+    // Add counties
+    svg.append('g').selectAll('path')
+       .data(topojson.feature(us, us.objects.counties).features).enter()
+       .append('path')
+       .attr('class', 'county')
+       .attr('data-fips', d => d.id)
+       .attr('data-education', d => eduMap[d.id] ?
+          eduMap[d.id].bachelorsOrHigher :
+          console.log(`matching fips id (${d.id}) not found.`)
+        )
+       .attr('d', path)
+       .attr('fill', d => eduMap[d.id] ?
+          cScale(eduMap[d.id].bachelorsOrHigher) :
+          cScale(0)
+        )
+      .on('mouseover', d => {
+          tooltip.transition().duration(200).style('opacity', .9);
+          return eduMap[d.id] ?
+            tooltip.html(`${eduMap[d.id].area_name}, ${eduMap[d.id].state}
+                          (${eduMap[d.id].bachelorsOrHigher}%)`)
+                 .attr('data-education', eduMap[d.id].bachelorsOrHigher)
+                 .style('left', (d3.event.pageX) + 'px')
+                 .style('top', (d3.event.pageY - 28) + 'px') : 0;
+        })
+      .on('mouseout', d => tooltip.transition().duration(500).style('opacity', 0));
+
+    // Add line between states
+    svg.append('path').datum(topojson.mesh(us, us.objects.states, (a,b) => a!==b))
+       .attr('fill', 'none').attr('stroke', 'white')
+       .attr('stroke-linejoin', 'round').attr('d', path);
+
+    // Add legend
+    let legend = svg.append('g').attr('id', 'legend');
+    let legendLabel = legend.selectAll('#legend').data(cScale.ticks())
+                            .enter().append('g')
+                            .attr('transform', (d, i) => `translate(900,500)`);
+
+    legendLabel.append('rect').attr('x', 0).attr('y', (d, i) => -30*i)
+               .attr('width', 15).attr('height',30)
+               .style('fill', d => cScale(d));
+
+    const pScale = d3.scaleLinear().domain([0, 70]).range([530,320]);
+    let lAxis = d3.axisRight(pScale).tickSize(25).ticks(7).tickFormat(d => d + '%');
+
+    legend.append('g').attr('transform', `translate(900,0)`).call(lAxis)
+          .select(".domain").remove().style('font-size', '11');
+  });
 }
