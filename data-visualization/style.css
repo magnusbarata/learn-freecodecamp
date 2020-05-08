@@ -8,9 +8,13 @@ body {
   opacity: 25;
 }
 
-.dot, .dotlegend{
+.dot, .dotlegend {
   stroke: black;
   opacity: 0.7;
+}
+
+.cell:hover {
+  stroke: black;
 }
 
 .visArea {
@@ -29,10 +33,16 @@ body {
 
 .barTip {
   font-size: 14px;
+  background: lightsteelblue;
 }
 
 .scatterTip {
   font-size: 10px;
+  background: lightsteelblue;
+}
+
+.heatmapTip {
+  background: white;
 }
 
 #tooltip {
@@ -41,7 +51,6 @@ body {
   width: auto;
   height: auto;
   padding: 2px;
-  background: lightsteelblue;
   border: 0px;
   border-radius: 8px;
   pointer-events: none;

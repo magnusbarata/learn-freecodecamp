@@ -2,6 +2,7 @@ const viewBarChart = function() {
   const w = 800, h = 400, padding = 60;
   let visArea = d3.select('.visArea');
   let title = visArea.select('#title').text('US GDP');
+  let desc = visArea.select('#description').text('');
   visArea.select('#tooltip').remove();
   visArea.select('svg').remove();
 
@@ -62,13 +63,13 @@ const viewScatterplot = function() {
   const w = 800, h = 400, padding = 60;
   let visArea = d3.select('.visArea');
   let title = visArea.select('#title').text('Doping in Bicycle Racing');
+  let desc = visArea.select('#description').text('');
   visArea.select('#tooltip').remove();
   visArea.select('svg').remove();
 
   d3.json('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/cyclist-data.json')
     .then(function (data) {
       // Preparation
-      const N = data.length;
       const color = d3.scaleOrdinal(['red', 'green'])
       const minYear = d3.min(data, d => new Date(d.Year.toString()));
       const maxYear = d3.max(data, d => new Date(d.Year.toString()));
@@ -144,5 +145,89 @@ const viewScatterplot = function() {
       svg.append('text').attr('transform', 'rotate(-90)')
          .attr('x', -h/2-20).attr('y', 15).text('Time (min:sec)');
       svg.append('text').attr('x', w/2-10).attr('y', h-25).text('Year');
+    });
+}
+
+const viewHeatMap = function() {
+  const w = 1000, h = 500, pad = {vert: 80, horiz: 80};
+  let visArea = d3.select('.visArea');
+  let title = visArea.select('#title').text('Global Land Surface Temperature Heatmap');
+  visArea.select('#tooltip').remove();
+  visArea.select('svg').remove();
+
+  d3.json('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/global-temperature.json')
+    .then(function (data) {
+      let desc = visArea.select('#description')
+                        .text(`Data from ${data.monthlyVariance[0].year} to
+                               ${data.monthlyVariance[data.monthlyVariance.length-1].year}
+                               with base temperature ${data.baseTemperature}˚C`);
+
+      // Scale setup
+      const xScale = d3.scaleBand().range([pad.horiz, w-pad.horiz]).padding(0)
+                       .domain(data.monthlyVariance.map(d => new Date(d.year.toString())));
+      const yScale = d3.scaleBand().range([0, h-pad.vert]).padding(0)
+                       .domain(data.monthlyVariance.map(d => new Date(0).setMonth(d.month-1)));
+      const colors = ['#5e4fa2', '#3288bd', '#66c2a5', '#abdda4', '#e6f598', '#ffffbf', '#fee08b', '#fdae61', '#f46d43', '#d53e4f', '#9e0142'];
+      const minTemp = d3.min(data.monthlyVariance, d => d.variance);
+      const maxTemp = d3.max(data.monthlyVariance, d => d.variance);
+      const cScale = d3.scaleQuantize().range(colors.slice(1,-1)).domain([minTemp, maxTemp]);
+
+      // Add tooltip
+      let tooltip = visArea.append('div').attr('id', 'tooltip')
+                           .attr('class','heatmapTip').style('opacity', 0);
+
+      // Add cells
+      let svg = visArea.append('svg').attr('width', w).attr('height', h);
+      svg.selectAll('rect').data(data.monthlyVariance).enter().append('rect')
+         .attr('data-month', d => d.month-1)
+         .attr('data-year', d => d.year)
+         .attr('data-temp', d => d.variance)
+         .attr('class', 'cell')
+         .attr('x', d => xScale(new Date(d.year.toString())))
+         .attr('y', d => yScale(new Date(0).setMonth(d.month-1)))
+         .attr('width', xScale.bandwidth())
+         .attr('height', yScale.bandwidth())
+         .attr('fill', d => cScale(d.variance))
+         .on('mouseover', d => {
+           let date = new Date(d.year, d.month-1);
+           tooltip.transition().duration(200).style('opacity', .9);
+           tooltip.html(`${d3.timeFormat('%B, %Y')(date)}<br/>
+                         ${(data.baseTemperature+d.variance).toFixed(1)}˚C
+                         (${d.variance.toFixed(1)}˚C)`)
+                  .attr('data-year', d.year)
+                  .style('left', (d3.event.pageX) + 'px')
+                  .style('top', (d3.event.pageY - 28) + 'px');
+           })
+         .on('mouseout', d => tooltip.transition().duration(500).style('opacity', 0));
+
+      // Add legend
+      let legend = svg.append('g').attr('id', 'legend');
+      let legendLabel = legend.selectAll('#legend').data(cScale.ticks().slice(0,-1))
+                              .enter().append('g')
+                              .attr('transform', (d, i) => `translate(${w/2+80},${h-pad.vert+20})`)
+
+      legendLabel.append('rect').attr('x', (d, i) => 30*i).attr('y', 0)
+                 .attr('width', 30).attr('height',30)
+                 .style('fill', (d,i) => colors[i]);
+
+      legendLabel.append('text').attr('x', (d, i) => 30*i).attr('y', 40)
+                 .attr('dy', '.3em').style('font-size', '12')
+                 .style('text-anchor', 'middle')
+                 .text(d => (data.baseTemperature+d).toFixed(1));
+
+      // Add axes
+      let xAxis = d3.axisBottom(xScale).tickFormat(d3.timeFormat('%Y'))
+                    .tickValues(xScale.domain().filter(y => y.getFullYear()%10 === 0));
+      svg.append('g').attr('transform', `translate(0,${h-pad.vert})`)
+         .attr('id', 'x-axis').call(xAxis);
+
+      let yAxis = d3.axisLeft(yScale).tickFormat(d3.timeFormat('%B'));
+      svg.append('g').attr('transform', `translate(${pad.horiz},0)`)
+         .attr('id', 'y-axis').call(yAxis);
+
+      // Axes labels
+      svg.append('text').attr('transform', 'rotate(-90)')
+         .attr('x', -h/2).attr('y', 15).text('Month');
+      svg.append('text').attr('x', w/2-10).attr('y', h-pad.vert+35).text('Year');
     });
 }

@@ -1,7 +1,7 @@
 # My Take on freeCodeCamp
 This repository highlights the projects I made for freeCodeCamp full-stack certification. See my full stack certification [here](https://www.freecodecamp.org/certification/magnusbarata/full-stack). Below is the curriculum when I finished the certification.
 
-Note: demos with strikethrough is currently under preparation for public display, and will be available in near future.
+Note: demos with strikethrough are currently under preparation for public display, and will be available in the near future.
 
 ## [Responsive Web Design](https://github.com/magnusbarata/learn-freecodecamp/tree/master/responsive-web-design)
 __See my [Responsive Web Design certification](https://www.freecodecamp.org/certification/magnusbarata/responsive-web-design).__
@@ -39,7 +39,7 @@ __Check out the demos!__
 4. ~[JavaScript Calculator]()~
 5. ~[Pomodoro Clock]()~
 
-## [Data Visualization]()
+## [Data Visualization](https://github.com/magnusbarata/learn-freecodecamp/tree/master/data-visualization)
 __See my [Data Visualization certification](https://www.freecodecamp.org/certification/magnusbarata/data-visualization).__
 
 __Technologies Learned:__ Data visualization using [D3](https://d3js.org/), in addition to JSON APIs and Ajax.
