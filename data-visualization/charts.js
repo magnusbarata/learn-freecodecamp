@@ -291,7 +291,7 @@ const viewChoroplethMap = function() {
     let legend = svg.append('g').attr('id', 'legend');
     let legendLabel = legend.selectAll('#legend').data(cScale.ticks())
                             .enter().append('g')
-                            .attr('transform', (d, i) => `translate(900,500)`);
+                            .attr('transform', 'translate(900,500)');
 
     legendLabel.append('rect').attr('x', 0).attr('y', (d, i) => -30*i)
                .attr('width', 15).attr('height',30)
@@ -303,4 +303,106 @@ const viewChoroplethMap = function() {
     legend.append('g').attr('transform', `translate(900,0)`).call(lAxis)
           .select(".domain").remove().style('font-size', '11');
   });
+}
+
+const viewTreemapDiagram = function() {
+  d3.select('#tooltip').remove();
+  d3.select('.visArea').select('svg').remove();
+  let title = d3.select('.visArea').select('#title')
+                .html(`Select dataset: <a onclick="treemapDiagram('videogame')">videogame</a> |
+                       <a onclick="treemapDiagram('movies')">movies</a> |
+                       <a onclick="treemapDiagram('kickstarter')">kickstarter</a>`);
+  d3.select('.visArea').select('#description').text('');
+}
+
+const treemapDiagram = function(name) {
+  const dataset = {
+    kickstarter: {
+      title: 'Kickstarter Pledges',
+      desc: 'Top 100 Most Pledged Kickstarter Campaigns Grouped By Category',
+      src: 'https://cdn.freecodecamp.org/testable-projects-fcc/data/tree_map/kickstarter-funding-data.json'
+    },
+    videogame: {
+      title: 'Video Game Sales',
+      desc: 'Top 100 Most Sold Video Games Grouped by Platform',
+      src: 'https://cdn.freecodecamp.org/testable-projects-fcc/data/tree_map/video-game-sales-data.json'
+    },
+    movies: {
+      title: 'Movie Sales',
+      desc: 'Top 100 Highest Grossing Movies Grouped By Genre',
+      src: 'https://cdn.freecodecamp.org/testable-projects-fcc/data/tree_map/movie-data.json'
+    }
+  };
+
+  const w = 800, h = 800, pad = 200;
+  let visArea = d3.select('.visArea');
+  let title = visArea.select('#title').text(dataset[name].title);
+  let desc = visArea.select('#description').text(dataset[name].desc);
+  let tooltip = visArea.append('div').attr('id', 'tooltip')
+                       .attr('class','treemapTip').style('opacity', 0);
+
+  let svg = visArea.append('svg').attr('width', w).attr('height', h);
+  d3.json(dataset[name].src).then(function (data) {
+      let hierarchy = d3.hierarchy(data)
+                        .sum(d => d.value)  // size of each leaf
+                        .sort((a, b) => b.height - a.height || b.value - a.value);
+      let treemap = d3.treemap().size([w,h-pad]).padding(1);
+      const root = treemap(hierarchy);
+      const categories = Array.from(new Set(root.leaves().map(node => node.data.category)));
+      const colorScheme = [];
+      d3.schemeCategory10.forEach(color => {
+        colorScheme.push(color);
+        colorScheme.push(d3.interpolateRgb(color, 'white')(0.5));
+      });
+      const color = d3.scaleOrdinal(colorScheme);
+
+      // Add rects
+      const leaf = svg.selectAll('g').data(root.leaves()).enter().append('g')
+                      .attr('transform', d => `translate(${d.x0},${d.y0})`);
+      leaf.append('rect')
+          .attr('class', 'tile')
+          .attr('data-name', d => d.data.name)
+          .attr('data-category', d => d.data.category)
+          .attr('data-value', d => d.data.value)
+          .attr('width', d => d.x1 - d.x0)
+          .attr('height', d => d.y1 - d.y0)
+          .style('stroke', 'white')
+          .style('fill', d => color(d.data.category))
+          .on('mouseover', d => {
+             tooltip.transition().duration(200).style('opacity', .9);
+             tooltip.html(`${d.data.category} - ${d.data.name}<br/>${d.data.value}`)
+                    .attr('data-value', d.data.value)
+                    .style('left', (d3.event.pageX) + 'px')
+                    .style('top', (d3.event.pageY - 28) + 'px');
+            })
+          .on('mouseout', d => tooltip.transition().duration(500).style('opacity', 0));
+
+      // Add text labels
+      leaf.append('text').selectAll('tspan')
+          .data(d => d.data.name.split(/(?=[A-Z][^A-Z])/g)).enter()
+          .append('tspan')
+          .attr('x', 4)
+          .attr('y', (d, i) => 13+10*i)
+          .text(d => d)
+          .attr('font-size', '8px')
+
+      // Add legend
+      const LABEL_H_SPACE = 140;
+      const LABEL_SIZE = 15;
+      const labelsPerRow = Math.floor(w/LABEL_H_SPACE);
+      let legend = svg.append('g').attr('id', 'legend')
+                      .attr('transform', `translate(${90},${h-pad+40})`);
+      let legendLabel = legend.selectAll('g').data(categories)
+                              .enter().append('g')
+                              .attr('transform', (d,i) =>
+                               `translate(${(i%labelsPerRow)*LABEL_H_SPACE},
+                                ${(Math.floor(i/labelsPerRow))*LABEL_SIZE + (10*(Math.floor(i/labelsPerRow)))})`);
+
+      legendLabel.append('rect').attr('width', LABEL_SIZE).attr('height', LABEL_SIZE)
+                 .attr('class', 'legend-item')
+                 .attr('fill', d => color(d));
+
+      legendLabel.append('text').attr('x', LABEL_SIZE + 3).attr('y', LABEL_SIZE)
+                 .text(d => d);
+    });
 }

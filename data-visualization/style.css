@@ -41,7 +41,7 @@ body {
   background: lightsteelblue;
 }
 
-.heatmapTip {
+.heatmapTip, .treemapTip {
   background: white;
 }
 

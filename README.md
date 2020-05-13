@@ -9,8 +9,8 @@ __See my [Responsive Web Design certification](https://www.freecodecamp.org/cert
 __Technologies Learned:__ Designing a responsive web page using HTML5 and CSS3 only, in addition to web-accessibility and visual design.
 
 __Check out the demos!__
-1. [Tribute Page](https://cdpn.io/magnusbarata/debug/eYNxmGz/xJAjOnzKnPBk)
-2. [Survey Form](https://cdpn.io/magnusbarata/debug/qBdgoZe/vWARwReJRabk)
+1. [Tribute Page](https://codepen.io/magnusbarata/full/eYNxmGz)
+2. [Survey Form](https://codepen.io/magnusbarata/full/qBdgoZe)
 3. ~[Product Landing Page]()~
 4. ~[Technical Documentation Page]()~
 5. ~[Personal Portfolio Webpage]()~
@@ -44,7 +44,7 @@ __See my [Data Visualization certification](https://www.freecodecamp.org/certifi
 
 __Technologies Learned:__ Data visualization using [D3](https://d3js.org/), in addition to JSON APIs and Ajax.
 
-__Check out the demo [application](https://cdpn.io/magnusbarata/debug/GRpxZxW/jVkpobLqgjyA)!__
+__Check out the demo [application](https://codepen.io/magnusbarata/full/GRpxZxW)!__
 
 ## [APIs and Microservices](https://github.com/magnusbarata/learn-freecodecamp/tree/master/api-microservice)
 __See my [APIs and Microservices certification](https://www.freecodecamp.org/certification/magnusbarata/apis-and-microservices).__
